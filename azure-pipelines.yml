@@ -7,8 +7,8 @@ trigger:
 - main
 
 pool:
-  name:'default'
-  vmImage: 'DemoProjectAgent'
+  name: default
+  vmImage: DemoProjectAgent
 
 steps:
 - script: echo Hello, world!
