@@ -21,7 +21,6 @@ steps:
 - task: SonarQubePrepare@5
   inputs:
     SonarQube: '.netcore'
-    scannerMode: 'MSBuild'
-    projectKey: 'DemoProject-Monna'
-    projectName: 'DemoProject-Monna'
+    scannerMode: 'CLI'
+    configMode: 'file'
 - task: SonarQubeAnalyze@5
