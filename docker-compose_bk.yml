@@ -1,0 +1,80 @@
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: php
+    container_name: devopsmakeeasy_php_container
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: app
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html/
+    volumes:
+      - ./:/var/www/html/
+      - ./php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+    networks:
+      - app-network
+
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: devopsmakeeasy_nginx_webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "9090:80"
+      - "9091:443"
+    volumes:
+      - ./:/var/www/html/
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - app-network
+
+  #MySQL Service
+  db:
+    image: mysql
+    container_name: devopsmakeeasy_mysql_container
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Devopsmakeeasy@123 #Secure information and set password
+      MYSQL_DATABASE: devopsmakeeasy_ecom
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: devopsmakeeasy_phpmyadmin_container
+    ports:
+      - "9999:80"
+    environment:
+      PMA_ARBITRARY: 1
+      PMA_HOST: mysql
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: Devopsmakeeasy@123
+    links:
+      - db
+
+    networks:
+      - app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local
+

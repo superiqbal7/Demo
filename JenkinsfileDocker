@@ -1,0 +1,132 @@
+pipeline {
+
+    agent {
+        label "any"
+    }
+
+
+ 	stages {
+        stage("Build") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Unit Test") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Code Coverage") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Static Code Analysis Larastan") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Static Code Analysis Phpcs") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Docker build") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+                     sh "cd /var/jenkins_home/workspace/devopsmakeeasy-docker && docker build -t ecom-container:latest ."
+
+                }
+                }
+        }
+        stage("Docker Push") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "docker login -u admin -p admin 147.182.235.195:8083"
+                     sh "docker tag ecom-container 147.182.235.195:8083/docker-hosted/ecom-container"
+                     sh "docker push 147.182.235.195:8083/docker-hosted/ecom-container"
+
+                }
+                }
+        }
+        stage("Docker Image Test") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Deploy to Staging") {
+        steps{
+            script {
+
+
+
+                        def remote = [:]
+
+                        remote.name = "${remote_name}"
+                        remote.host = "${remote_host}"
+                        remote.user = "${remote_user}"
+                        remote.password = "${remote_pass}"
+                        remote.allowAnyHosts = true
+
+
+                        sshPut remote: remote, from: '/var/jenkins_home/workspace/devopsmakeeasy/docker-compose.yml', into: '/var/www/container/'
+                        sshCommand remote: remote, command: "cd .. && cd var/www/container/ && chmod +x docker-app.sh && ./docker-app.sh"
+                        sshCommand remote: remote, command: "cd .. && cd var/www/container/ && docker-compose up -d --build"
+                        sshCommand remote: remote, command: "cd .. && cd var/www/container/ && docker exec devopsmakeeasy_ecom_container bash /var/www/html/srcipt_lara_docker_build.sh"
+
+
+
+                        }
+        }
+
+        }
+        stage("Acceptance Test") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+        stage("Acceptance Test Codeception") {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+
+                     sh "ls"
+
+                }
+                }
+        }
+
+
+
+    }
+}
