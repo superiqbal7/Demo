@@ -6,14 +6,10 @@
 trigger:
 - main
 
-pool:
-  name: default
-  vmImage: DemoProjectAgent
-
 steps:
 - task: SonarQubePrepare@5
   inputs:
-    SonarQube: '.netcore'
+    SonarQube: 'SonarQube'
     scannerMode: 'CLI'
     configMode: 'manual'
     cliProjectKey: 'DemoProject-Monna'
